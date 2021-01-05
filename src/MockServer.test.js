@@ -12,6 +12,8 @@ const server = setupServer(
   })
 );
 
+// サーバーの開始と終了
+
 beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();
@@ -22,12 +24,16 @@ afterAll(() => server.close());
 describe("Mocking API", () => {
   it("[Fetch success]Should display fetched data correctly and button disable", async () => {
     render(<MockServer />);
-    userEvent.click(screen.getByRole("button"));
+    // ユーザーの挙動
+    userEvent.click(screen.getByRole("button")); 
+    // Bred dummyがあるかどうか
     expect(await screen.findByText("Bred dummy")).toBeInTheDocument();
+    // buttonがdisabledであるかどうか あればpass
     expect(screen.getByRole("button")).toHaveAttribute("disabled");
   });
   it("[Fetch failure]Should display error msg, no render heading and button abled", async () => {
     server.use(
+      // statusを404のnot foundにする
       rest.get(
         "https://jsonplaceholder.typicode.com/users/1",
         (req, res, ctx) => {
@@ -40,7 +46,9 @@ describe("Mocking API", () => {
     expect(await screen.findByTestId("error")).toHaveTextContent(
       "Fetching Failed !"
     );
+    // h3が存在しないことを確認
     expect(screen.queryByRole("heading")).toBeNull();
+    // buttonがdisabledではない
     expect(screen.getByRole("button")).not.toHaveAttribute("disabled");
   });
 });
